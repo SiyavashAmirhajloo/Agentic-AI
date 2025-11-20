@@ -1,59 +1,22 @@
-from openai import OpenAI
+# src/agents.py
+from groq import Groq
 import os
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 class LLM_Agent:
-    def __init__(self, model: str = "gpt-4o"):
-        """
-        Initializes the OpenAI client with the selected model.
-
-        Args:
-            model_choice (str): Either "gpt-4o" or "o3-mini".
-        """
+    def __init__(self, model="llama-3.3-70b-versatile"):
         self.model = model
-        
-    def get_response(self, messages) -> str:
-        """
-        Sends a prompt to the OpenAI model and returns the response.
 
-        Args:
-            prompt (str): The input prompt.
-
-        Returns:
-            str: The model's response.
-        """
-        completion = client.chat.completions.create(
+    def get_response(self, messages, temperature=0.7, max_tokens=2048):
+        response = client.chat.completions.create(
             model=self.model,
-            messages=messages
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=0.9
         )
+        return response.choices[0].message.content
 
-        return completion.choices[0].message.content
-
-class Reasoning_Agent(LLM_Agent):
-    def __init__(self, model: str = "o3-mini"):
-        """
-        Initializes the OpenAI client with the selected model.
-
-        Args:
-            model_choice (str): Either "gpt-4o" or "o3-mini".
-        """
-        self.model = model
-
-# Example usage:
-if __name__ == "__main__":
-    agent = LLM_Agent(model="gpt-4o")
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Can you explain the concept of recursion in programming?"}
-    ]
-    #response = agent.get_response(messages)
-    #print(response)
-    
-    reasoning_agent = Reasoning_Agent(model="o3-mini")
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Can you explain the concept of recursion in programming?"}
-    ]
-    solution = reasoning_agent.get_response(messages)
-    print(solution)
+class Generation_Agent(LLM_Agent):
+    pass  # We only need one strong model

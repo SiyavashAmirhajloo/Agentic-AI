@@ -1,5 +1,4 @@
 # Agentic-AI
-To be completed soon
 ---
 
 ## Agentic AI — Multi-Agent Projects & Notebooks
